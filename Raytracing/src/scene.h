@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-// 3D vectors, spheres and scene
+// vettori 3D, sfere e scena
 
 typedef struct {
     float x, y, z;
@@ -22,6 +22,6 @@ typedef struct {
     Sphere *spheres;
 } Scene;
 
-void load_scene(const char *filename, Scene *scene); //reads scene from file txt
-
+void load_scene(const char *filename, Scene *scene); //legge scena da file txt
+void render_scene(Scene *scene, unsigned char *image, int width, int height);
 #endif
