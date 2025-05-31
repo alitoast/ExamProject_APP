@@ -23,6 +23,9 @@ int main(int argc, char *argv[]) {
     // caricamento scena
     Scene scene;
     load_scene(scene_file, &scene);
+    if (!load_scene(scene_file, &scene)) {
+        return 1;
+    }
 
     // allocazione memoria
     unsigned char *image = malloc(3 * width * height);
@@ -35,6 +38,12 @@ int main(int argc, char *argv[]) {
     // rendering e salvataggio
     render_scene(&scene, image, width, height);
     save_ppm(output_file, image, width, height);
+    if (!save_ppm(output_file, image, width, height)) {
+        fprintf(stderr, "Errore: salvataggio immagine fallito\n");
+        free(image);
+        free_scene(&scene);
+        return 1;
+    }
 
     // pulizia ed uscita
     free(image);
