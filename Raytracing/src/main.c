@@ -17,6 +17,18 @@ int main(int argc, char *argv[]) {
     Scene scene;
     load_scene(scene_file, &scene);
 
+    unsigned char *image = malloc(3 * width * height);
+    if (!image) {
+        printf("Errore: memoria insufficiente\n");
+        return 1;
+    }
+
+    render_scene(&scene, image, width, height);
+    save_ppm(output_file, image, width, height);
+
+    free(image);
     free(scene.spheres);
+
+    printf("Rendering completato! Immagine salvata in %s\n", output_file);
     return 0;
 }
