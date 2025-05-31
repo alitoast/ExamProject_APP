@@ -1,3 +1,8 @@
+/*
+Alice Macuz 
+SM3201385
+*/
+
 #ifndef PPM_H
 #define PPM_H
 

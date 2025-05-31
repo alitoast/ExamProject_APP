@@ -1,3 +1,8 @@
+/*
+Alice Macuz 
+SM3201385
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>

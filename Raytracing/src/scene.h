@@ -1,3 +1,8 @@
+/*
+Alice Macuz 
+SM3201385
+*/
+
 #ifndef SCENE_H
 #define SCENE_H
 
