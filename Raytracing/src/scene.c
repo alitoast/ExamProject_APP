@@ -5,15 +5,17 @@ SM3201385
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <stdbool.h>
 #include <float.h>
 #include <math.h>
 #include "scene.h"
 
-void load_scene(const char *filename, Scene *scene) {
+bool load_scene(const char *filename, Scene *scene) {
     FILE *file = fopen(filename, "r");
     if (!file) {
         printf("Errore: impossibile aprire %s\n", filename);
-        exit(1);
+        return false;
     }
 
     fscanf(file, "VP %f %f %f\n", &scene->viewport_width, &scene->viewport_height, &scene->viewport_distance);
@@ -28,11 +30,13 @@ void load_scene(const char *filename, Scene *scene) {
     scene->spheres = malloc(scene->sphere_count * sizeof(Sphere));
     if (!scene->spheres) {
         fprintf(stderr, "Errore: L'allocamento della memoria non è andato a buon fine.\n");
-        exit(1);
+        return false;
     }
     
-    int sphere_count_read = 0; //what if the number of spheres in the file doesn't match OBJ_N
+    
+    int sphere_count_read = 0; // contatore per vedere se il numero di sfere corrisponde OBJ_N
     for (int i = 0; i < scene->sphere_count; i++) {
+        // leggi i dati
         Sphere *s = &scene->spheres[i];
         fscanf(file, "S %f %f %f %f %hhu %hhu %hhu\n",
                &s->center.x, &s->center.y, &s->center.z,
@@ -40,16 +44,19 @@ void load_scene(const char *filename, Scene *scene) {
 
         printf("Sfera %d - Centro: (%.2f, %.2f, %.2f), Raggio: %.2f, Colore: (%d, %d, %d)\n",
                i + 1, s->center.x, s->center.y, s->center.z, s->radius, s->r, s->g, s->b);
+        // aggiorna il contatore
         sphere_count_read++;
     }
 
+    // se c'è un mismatch presenta errore
     if (sphere_count_read != scene->sphere_count) {
-    fprintf(stderr, "Errore: Le sfere non corrispondono (expected %d, read %d)\n",
-            scene->sphere_count, sphere_count_read);
-    exit(1);
+        fprintf(stderr, "Errore: Le sfere non corrispondono (expected %d, read %d)\n",
+                scene->sphere_count, sphere_count_read);
+        return false;
 }
 
     fclose(file);
+    return true;
 }
 
 // funzione per calcolare l'intersezione tra un raggio e una sfera
@@ -78,7 +85,7 @@ int intersect_ray_sphere(Vector3 origin, Vector3 direction, Sphere sphere, float
 
 // funzione per generare i raggi e calcolare i colori dei pixel
 void render_scene(Scene *scene, unsigned char *image, int width, int height) {
-    Vector3 camera = {0, 0, 0}; // camera è sempre all'origine
+    Vector3 camera = {0, 0, 0}; // la camera è sempre all'origine
 
     float aspect_ratio = (float)width / height;
     float viewport_w = scene->viewport_width;
@@ -91,7 +98,7 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
             float u = (i - width / 2.0f) * (viewport_w / width);
             float v = (j - height / 2.0f) * (viewport_h / height);
             Vector3 direction = {u, v, focal_length};
-            // normalizzo il vettore
+            // normalizza il vettore
             float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
             direction.x /= length;
             direction.y /= length;
@@ -100,7 +107,7 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
             float nearest_t = FLT_MAX;
             int hit_sphere = -1;
 
-            // controllo intersezioni
+            // controlla intersezioni
             for (int s = 0; s < scene->sphere_count; s++) {
                 float t;
                 if (intersect_ray_sphere(camera, direction, scene->spheres[s], &t)) {
@@ -123,4 +130,9 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
             }
         }
     }
+}
+
+// funzione per liberare la memoria allocata per una scena con passaggio di puntatore
+void free_scene(Scene *scene) {
+    free(scene->spheres);
 }
