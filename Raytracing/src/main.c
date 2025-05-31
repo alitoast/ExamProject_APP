@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "scene/scene.h"
-
+#include "scene.h"
+#include "ppm.h"
 
 int main(int argc, char *argv[]) {
     if (argc != 5) {
