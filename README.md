@@ -11,7 +11,7 @@ This repository contains my final project for the Advanced and Parallel Programm
 A raytracer implemented in C with parallel pixel rendering using OpenMP.
 
 
-## Part 2 - Little Man Computer (Python Project)
+## Part 2 - Little Man Computer in Python
 
 [Documentation](LittleManComputer/README.md)
 
@@ -21,3 +21,4 @@ A Python simulator and assembler for the educational Little Man Computer archite
 
 ### Author:
 Alice Macuz
+SM3201385
