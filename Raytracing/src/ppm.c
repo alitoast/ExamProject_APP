@@ -9,7 +9,6 @@ SM3201385
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <string.h>
-#include <unistd.h>
 #include "ppm.h"
 
 bool save_ppm(const char *filename, unsigned char *image, int width, int height) {
