@@ -5,6 +5,7 @@ SM3201385
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "scene.h"
 #include "ppm.h"
 
@@ -19,21 +20,25 @@ int main(int argc, char *argv[]) {
     int width = atoi(argv[3]);
     int height = atoi(argv[4]);
 
+    // caricamento scena
     Scene scene;
     load_scene(scene_file, &scene);
 
+    // allocazione memoria
     unsigned char *image = malloc(3 * width * height);
     if (!image) {
         printf("Errore: memoria insufficiente\n");
+        free_scene(&scene);
         return 1;
     }
 
+    // rendering e salvataggio
     render_scene(&scene, image, width, height);
     save_ppm(output_file, image, width, height);
 
+    // pulizia ed uscita
     free(image);
-    free(scene.spheres);
-
+    free_scene(&scene);
     printf("Rendering completato! Immagine salvata in %s\n", output_file);
     return 0;
 }
