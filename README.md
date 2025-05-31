@@ -1,9 +1,23 @@
-# Advanced and Parallel Programming
+# Exam Project – Advanced and Parallel Programming
 
-Part 1 - Raytracing (C Project)
+This repository contains my final project for the Advanced and Parallel Programming course. It consists of two main components:
 
-[Documentation](./C-Project/README.md)
+--- 
 
-Part 2 - Little Man Computer (Python Project)
+## Part 1 - Raytracing in C
 
-[Documentation](./Python-Project/README.md)
+[Documentation](Raytracing/README.md)
+
+A raytracer implemented in C with parallel pixel rendering using OpenMP.
+
+
+## Part 2 - Little Man Computer (Python Project)
+
+[Documentation](LittleManComputer/README.md)
+
+A Python simulator and assembler for the educational Little Man Computer architecture.
+
+---
+
+### Author:
+Alice Macuz
