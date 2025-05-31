@@ -7,6 +7,7 @@ SM3201385
 #define SCENE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // vettori 3D, sfere e scena
 
@@ -27,6 +28,8 @@ typedef struct {
     Sphere *spheres;
 } Scene;
 
-void load_scene(const char *filename, Scene *scene); //legge scena da file txt
+bool load_scene(const char *filename, Scene *scene);
+int intersect_ray_sphere(Vector3 origin, Vector3 direction, Sphere sphere, float *t);
 void render_scene(Scene *scene, unsigned char *image, int width, int height);
+void free_scene(Scene *scene);
 #endif
