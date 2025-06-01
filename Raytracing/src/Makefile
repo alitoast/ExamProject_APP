@@ -15,11 +15,11 @@ $(EXEC): $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
-.PHONY: all clean
+.PHONY: all clean run convert
 clean:
 	rm -f $(OBJ) $(EXEC)
 
-.PHONY: run
+
 run: $(EXEC)
 	./$(EXEC) scene.txt output.ppm 1920 1080
 
