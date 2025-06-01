@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
 
     // caricamento scena
     Scene scene;
-    load_scene(scene_file, &scene);
     if (!load_scene(scene_file, &scene)) {
         printf("Errore: la scena non è stata caricata correttamente.\n");
         return ERROR_SCENE_LOADING;
