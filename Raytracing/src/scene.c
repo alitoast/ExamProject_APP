@@ -30,6 +30,7 @@ bool load_scene(const char *filename, Scene *scene) {
     scene->spheres = malloc(scene->sphere_count * sizeof(Sphere));
     if (!scene->spheres) {
         fprintf(stderr, "Errore: L'allocamento della memoria non è andato a buon fine.\n");
+        fclose(file);
         return false;
     }
     
@@ -52,6 +53,8 @@ bool load_scene(const char *filename, Scene *scene) {
     if (sphere_count_read != scene->sphere_count) {
         fprintf(stderr, "Errore: Le sfere non corrispondono (expected %d, read %d)\n",
                 scene->sphere_count, sphere_count_read);
+        free(scene->spheres);
+        fclose(file);
         return false;
 }
 
