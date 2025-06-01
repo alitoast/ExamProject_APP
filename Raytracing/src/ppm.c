@@ -28,7 +28,7 @@ SM3201385
 bool save_ppm(const char *filename, unsigned char *image, int width, int height) {
     int fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666);
     if (fd < 0) {
-        printf("Errore: impossibile aprire il file per scrittura");
+        fprintf(stderr, "Errore: impossibile aprire il file per scrittura\n");
         return false;
     }
 
@@ -39,7 +39,7 @@ bool save_ppm(const char *filename, unsigned char *image, int width, int height)
 
     // ridimensiona il file alla dimensione necessaria
     if (ftruncate(fd, file_size) == -1) {
-        printf("Errore: ridimensionamento fallito");
+        fprintf(stderr,"Errore: ridimensionamento fallito\n");
         close(fd);
         return false;
     }
@@ -47,7 +47,7 @@ bool save_ppm(const char *filename, unsigned char *image, int width, int height)
     // mappa il file in memoria
     void *map = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (map == MAP_FAILED) {
-        printf("Errore: mmap fallito");
+        fprintf(stderr,"Errore: mmap fallito\n");
         close(fd);
         return false;
     }
@@ -58,12 +58,12 @@ bool save_ppm(const char *filename, unsigned char *image, int width, int height)
 
     // sincronizza le modifiche su disco
     if (msync(map, file_size, MS_SYNC) == -1) {
-        printf("Errore: sincronizzazione con disco fallita");
+        fprintf(stderr,"Errore: sincronizzazione con disco fallita\n");
     }
 
     // libera la memoria e chiudi il file
     if (munmap(map, file_size) == -1) {
-        printf("Errore: munmap fallito");
+        fprintf(stderr,"Errore: munmap fallito\n");
     }
     close(fd);
 

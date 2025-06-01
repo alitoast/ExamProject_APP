@@ -25,7 +25,7 @@ SM3201385
 bool load_scene(const char *filename, Scene *scene) {
     FILE *file = fopen(filename, "r");
     if (!file) {
-        printf("Errore: impossibile aprire %s\n", filename);
+        fprintf(stderr,"Errore: impossibile aprire %s\n", filename);
         return false;
     }
     // legge i parametri della scena

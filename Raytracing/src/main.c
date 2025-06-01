@@ -19,7 +19,7 @@ SM3201385
 
 int main(int argc, char *argv[]) {
     if (argc != 5) {
-        printf("Uso: %s <file scena> <output PPM> <larghezza> <altezza>\n", argv[0]);
+        fprintf(stderr,"Errore: l'utilizzo corretto è: %s <file scena> <output PPM> <larghezza> <altezza>\n", argv[0]);
         return ERROR_USAGE;
     }
 
@@ -31,14 +31,14 @@ int main(int argc, char *argv[]) {
     // caricamento scena
     Scene scene;
     if (!load_scene(scene_file, &scene)) {
-        printf("Errore: la scena non è stata caricata correttamente.\n");
+        fprintf(stderr,"Errore: la scena non è stata caricata correttamente.\n");
         return ERROR_SCENE_LOADING;
     }
 
     // allocazione memoria
     unsigned char *image = malloc(3 * width * height);
     if (!image) {
-        printf("Errore: memoria insufficiente\n");
+        fprintf(stderr,"Errore: memoria insufficiente\n");
         free_scene(&scene);
         return ERROR_MEMORY;
     }
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     // rendering e salvataggio
     render_scene(&scene, image, width, height);
     if (!save_ppm(output_file, image, width, height)) {
-        printf("Errore: salvataggio immagine fallito\n");
+        fprintf(stderr,"Errore: salvataggio immagine fallito\n");
         free(image);
         free_scene(&scene);
         return ERROR_IMAGE_SAVING;
@@ -55,6 +55,6 @@ int main(int argc, char *argv[]) {
     // pulizia ed uscita
     free(image);
     free_scene(&scene);
-    printf("Rendering completato! Immagine salvata in %s\n", output_file);
+    fprintf(stderr,"Rendering completato! Immagine salvata in %s\n", output_file);
     return SUCCESS;
 }
