@@ -47,7 +47,6 @@ Removes compiled files (`raytracer`, `.o`, `output.ppm`, `output.png`).
 
 ---
 
-
 ## **Dependencies**
 - **GCC** (C compiler).
 - **OpenMP** (for parallel rendering).
@@ -66,4 +65,13 @@ Removes compiled files (`raytracer`, `.o`, `output.ppm`, `output.png`).
     brew install imagemagick
     ```
 
+## **Error Codes**
+The program returns the following errors if they arise:
 
+| **Error Code** | **Error Name**        | **Description**                |
+| -------------- | --------------------- | ------------------------------ |
+| 0            | `SUCCESS`             | Program executed successfully. |
+| 2            | `ERROR_USAGE`         | Incorrect command-line usage.  |
+| 3            | `ERROR_SCENE_LOADING` | Failed to load the scene file. |
+| 4            | `ERROR_MEMORY`        | Failed to allocate memory.      |
+| 5            | `ERROR_IMAGE_SAVING`  | Failed to save the image.      |
