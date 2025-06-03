@@ -77,8 +77,16 @@ class Assembler:
                 raise ValueError("Errore: istruzione invalida.")
 
             # gestione DAT
-            if instr == "DAT":
-                value = int(operand) if operand else 0
+            elif instr == "DAT":
+                if operand is None:
+                    value = 0
+                else:
+                    if operand.isdigit():
+                        value = int(operand)
+                    elif operand.upper() in self.labels:
+                        value = self.labels[operand.upper()]
+                    else:
+                        raise ValueError("Errore: Label non definita")
                 self.memory[current] = value
 
             # gestione INP, OUT, HLT
