@@ -7,6 +7,9 @@ from copy import copy
 
 class LMC:
 
+    class MemoryLimitError(LMCError):
+        pass
+
     def __init__(self, input_values=None):
         self.ram = [0] * 100                  
         self.acc = 0                          # Accumulator
@@ -48,4 +51,5 @@ class LMC:
         if mode.lower() == "s":
             self._display_debug()
             input("Premere INVIO per continuare...")
+    
     
