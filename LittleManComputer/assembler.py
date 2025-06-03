@@ -61,52 +61,56 @@ class Assembler:
         #
         # converte istruzioni in codice macchina
         #
-        current = 0
-
+        current_address = 0
         for line in source_lines:
-            parts = line.split(maxsplit=2)
-
-            # rimuove label se presente
-            if len(parts) > 1 and parts[0].upper() not in self.opcodes:
-                parts.pop(0)
-
-            instr = parts[0].upper()
-            operand = parts[1] if len(parts) > 1 else None
+            instr, operand = self._parse_instruction(line)
 
             if instr not in self.opcodes:
-                raise ValueError("Errore: istruzione invalida.")
+                raise ValueError("Errore: Istruzione non valida.")
 
-            # gestione DAT
-            elif instr == "DAT":
-                if operand is None:
-                    value = 0
-                else:
-                    if operand.isdigit():
-                        value = int(operand)
-                    elif operand.upper() in self.labels:
-                        value = self.labels[operand.upper()]
-                    else:
-                        raise ValueError("Errore: Label non definita")
-                self.memory[current] = value
-
-            # gestione INP, OUT, HLT
+            if instr == "DAT":
+                self.memory[current_address] = self._resolve_dat(operand)
             elif instr in ("INP", "OUT", "HLT"):
-                self.memory[current] = self.opcodes[instr]
-
-            # tutte le altre, che richiedono indirizzo
+                self.memory[current_address] = self.opcodes[instr]
             else:
-                if operand is None:
-                    raise ValueError("Errore: operando mancante.")
+                self.memory[current_address] = self._resolve_instruction_with_operand(instr, operand)
 
-                # conversione a numerico
-                if operand.isdigit():
-                    address = int(operand)
-                elif operand.upper() in self.labels:
-                    address = self.labels[operand.upper()]
-                else:
-                    raise ValueError("Errore: Label non definita")
+            current_address += 1
 
-                # combina opcode e address (es, ADD 03 → 103)
-                self.memory[current] = self.opcodes[instr] * 100 + address
+    def _parse_instruction(self, line):
+        #
+        # estrae istruzione e operando, rimuove label se presente
+        #
+        parts = line.split(maxsplit=2)
+        if len(parts) > 1 and parts[0].upper() not in self.opcodes:
+            parts.pop(0)  # rimuove label
+        instr = parts[0].upper()
+        operand = parts[1] if len(parts) > 1 else None
+        return instr, operand
 
-            current += 1
+    def _resolve_dat(self, operand):
+        #
+        # risolve il valore di una direttiva DAT
+        #
+        if operand is None:
+            return 0
+        if operand.isdigit():
+            return int(operand)
+        elif operand.upper() in self.labels:
+            return self.labels[operand.upper()]
+        else:
+            raise ValueError("Errore: Label non definita in DAT.")
+
+    def _resolve_instruction_with_operand(self, instr, operand):
+        #
+        # risolve istruzioni con operando (es. ADD, STA)
+        #
+        if operand is None:
+            raise ValueError("Errore: Operando mancante per istruzione.")
+        if operand.isdigit():
+            address = int(operand)
+        elif operand.upper() in self.labels:
+            address = self.labels[operand.upper()]
+        else:
+            raise ValueError("Errore: Label non definita.")
+        return self.opcodes[instr] * 100 + address
