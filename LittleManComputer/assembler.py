@@ -5,7 +5,11 @@
 
 class Assembler:
     def __init__(self):
-        self.opcodes ={}
+        self.opcodes ={
+            "ADD": 1, "SUB": 2, "STA": 3, "LDA": 5,
+            "BRA": 6, "BRZ": 7, "BRP": 8,
+            "INP": 901, "OUT": 902, "HLT": 0,
+            "DAT": None}
         self.labels = {}
         self.memory = [0] * 100
     
@@ -32,7 +36,7 @@ class Assembler:
         # mappa labels to indirizzi memoria
         #
 
-
+        
     def _to_machine_code(self, source_lines):
         #
         # converte istruzioni in codice macchina
