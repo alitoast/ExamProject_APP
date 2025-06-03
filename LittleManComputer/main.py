@@ -11,7 +11,7 @@ def get_input_values():
     # prende valori dall'user 
     #
     while True:
-        raw_input = input("Inserisci valori di input separati dalla virgola (0–999): ").strip()
+        raw_input = input("Inserisci valori di input, separati dalla virgola se valori multipli: ").strip()
         if not raw_input:
             return []
         try:
@@ -79,9 +79,12 @@ def main():
     input_values = get_input_values()
     mode = choose_execution_mode()
     lmc_sim = run_simulation(memory, input_values, mode)
-    
+
     print("=== Output Finale ===")
     print("Output queue:", lmc_sim.get_output())
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nInterruzione da tastiera. Uscita dal simulatore.")
