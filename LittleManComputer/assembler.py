@@ -44,10 +44,10 @@ class Assembler:
             if len(parts) > 1 and parts[0].upper() not in self.opcodes:
                 label = parts[0].upper()
 
-                if label in self.label_table:
+                if label in self.labels:
                     raise ValueError("Errore: Label duplicata")
 
-                self.label_table[label] = current_address
+                self.labels[label] = current_address
 
             # conta line come istruzione e avanza l'indirizzo mem
             if len(parts) > 1 or parts[0].upper() in self.opcodes:
@@ -93,8 +93,8 @@ class Assembler:
                 # conversione a numerico
                 if operand.isdigit():
                     address = int(operand)
-                elif operand.upper() in self.label_table:
-                    address = self.label_table[operand.upper()]
+                elif operand.upper() in self.labels:
+                    address = self.labels[operand.upper()]
                 else:
                     raise ValueError("Errore: Label non definita")
 
