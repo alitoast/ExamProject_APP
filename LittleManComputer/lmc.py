@@ -35,7 +35,7 @@ class LMC:
             raise self.MemoryLimitError("Errore: Programma troppo grande per memoria.")
         self.ram = copy(memory_image)
 
-        def execute(self, mode="n"):
+    def execute(self, mode="n"):
         #
         # esegue tutto il programma oppure step-by-stepp
         #
@@ -117,3 +117,18 @@ class LMC:
 
         else:
             raise self.InvalidInstructionError(f"Errore: Istruzione non ammessa: {opcode}{address}")
+
+    def get_output(self):
+        return self.output_buffer
+
+    def _display_debug(self):
+        #
+        # debug display per step-by-step
+        #
+        print(f"\n[DEBUG] PC: {self.pc} | ACC: {self.acc} | FLAG: {self.flag}")
+        print("[DEBUG] Memory:")
+        for i in range(0, 100, 10):
+            row = ' '.join(f"{cell:03}" for cell in self.ram[i:i+10])
+            print(f"{i:02}-{i+9:02}: {row}")
+        print(f"[DEBUG] Input buffer: {self.input_buffer}")
+        print(f"[DEBUG] Output buffer: {self.output_buffer}")
