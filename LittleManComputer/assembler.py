@@ -35,8 +35,28 @@ class Assembler:
         #
         # mappa labels to indirizzi memoria
         #
+        current_address = 0
 
-        
+        for line in source_lines:
+            parts = line.split(maxsplit=1)
+
+            # se la prima parola non è un'istruzione, allora è una label
+            if len(parts) > 1 and parts[0].upper() not in self.opcodes:
+                label = parts[0].upper()
+
+                if label in self.label_table:
+                    raise ValueError(f"Errore: Label duplicata")
+
+                self.label_table[label] = current_address
+
+            # conta line come istruzione e avanza l'indirizzo mem
+            if len(parts) > 1 or parts[0].upper() in self.opcodes:
+                current_address += 1
+
+            # controlla bounds
+            if current_address > 100:
+                raise MemoryError("Errore: Il programma eccede la memoria dell'LMC (100 celle).")
+
     def _to_machine_code(self, source_lines):
         #
         # converte istruzioni in codice macchina
