@@ -45,7 +45,7 @@ class Assembler:
                 label = parts[0].upper()
 
                 if label in self.label_table:
-                    raise ValueError(f"Errore: Label duplicata")
+                    raise ValueError("Errore: Label duplicata")
 
                 self.label_table[label] = current_address
 
@@ -61,3 +61,44 @@ class Assembler:
         #
         # converte istruzioni in codice macchina
         #
+        current = 0
+
+        for line in source_lines:
+            parts = line.split(maxsplit=2)
+
+            # rimuove label se presente
+            if len(parts) > 1 and parts[0].upper() not in self.opcodes:
+                parts.pop(0)
+
+            instr = parts[0].upper()
+            operand = parts[1] if len(parts) > 1 else None
+
+            if instr not in self.opcodes:
+                raise ValueError("Errore: istruzione invalida.")
+
+            # gestione DAT
+            if instr == "DAT":
+                value = int(operand) if operand else 0
+                self.memory[current] = value
+
+            # gestione INP, OUT, HLT
+            elif instr in ("INP", "OUT", "HLT"):
+                self.memory[current] = self.opcodes[instr]
+
+            # tutte le altre, che richiedono indirizzo
+            else:
+                if operand is None:
+                    raise ValueError("Errore: operando mancante.")
+
+                # conversione a numerico
+                if operand.isdigit():
+                    address = int(operand)
+                elif operand.upper() in self.label_table:
+                    address = self.label_table[operand.upper()]
+                else:
+                    raise ValueError("Errore: Label non definita")
+
+                # combina opcode e address (es, ADD 03 → 103)
+                self.memory[current] = self.opcodes[instr] * 100 + address
+
+            current += 1
