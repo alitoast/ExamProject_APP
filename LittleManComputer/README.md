@@ -53,6 +53,7 @@ python main.py
 **Input**:
 
 ```
+=== Simulatore Little Man Computer ===
 Inserisci percorso del file .lmc: LittleManComputer/tests/test.lmc
 Inserisci valori di input, separati dalla virgola se valori multipli: 4,5
 Modalità di esecuzione: [c]ompleta o [s]tep-by-step? c
