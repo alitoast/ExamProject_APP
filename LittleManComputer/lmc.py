@@ -66,67 +66,84 @@ class LMC:
         # decodifica ed esegue un'istruzione
         #
         if opcode == 1:  # ADD
-            result = self.acc + self.ram[address]
-            self.acc = result % 1000
-            self.flag = 1 if result > 999 else 0
-            self.pc += 1
-
+            self._handle_add(address)
         elif opcode == 2:  # SUB
-            result = self.acc - self.ram[address]
-            self.acc = result % 1000
-            self.flag = 1 if result < 0 else 0
-            self.pc += 1
-
+            self._handle_sub(address)
         elif opcode == 3:  # STA
-            self.ram[address] = self.acc
-            self.pc += 1
-
+            self._handle_sta(address)
         elif opcode == 5:  # LDA
-            self.acc = self.ram[address]
-            self.pc += 1
-
+            self._handle_lda(address)
         elif opcode == 6:  # BRA (unconditional)
-            self.pc = address
-
+            self._handle_bra(address)
         elif opcode == 7:  # BRZ (branch if zero)
-            if self.acc == 0 and self.flag == 0:
-                self.pc = address
-            else:
-                self.pc += 1
-
+            self._handle_brz(address)
         elif opcode == 8:  # BRP (branch if positive)
-            if self.flag == 0:
-                self.pc = address
-            else:
-                self.pc += 1
-
-        elif opcode == 9:
-            if address == 1:  # INP
-                if not self.input_buffer:
-                    raise self.InputQueueEmptyError("Errore: Input buffer vuoto.")
-                self.acc = self.input_buffer.pop(0)
-                self.pc += 1
-            elif address == 2:  # OUT
-                self.output_buffer.append(self.acc)
-                self.pc += 1
-            else:
-                raise self.InvalidInstructionError(f"Errore: I/O opcode sconosciuto: 9{address}")
-
+            self._handle_brp(address)
+        elif opcode == 9:  # I/O
+            self._handle_io(address)
         elif opcode == 0:  # HLT
-            raise StopIteration
-
+            self._handle_hlt()
         else:
             raise self.InvalidInstructionError(f"Errore: Istruzione non ammessa: {opcode}{address}")
+
+    def _handle_add(self, address):
+        result = self.acc + self.ram[address]
+        self.acc = result % 1000
+        self.flag = 1 if result > 999 else 0
+        self.pc += 1
+
+    def _handle_sub(self, address):
+        result = self.acc - self.ram[address]
+        self.acc = result % 1000
+        self.flag = 1 if result < 0 else 0
+        self.pc += 1
+
+    def _handle_sta(self, address):
+        self.ram[address] = self.acc
+        self.pc += 1
+
+    def _handle_lda(self, address):
+        self.acc = self.ram[address]
+        self.pc += 1
+
+    def _handle_bra(self, address):
+        self.pc = address
+
+    def _handle_brz(self, address):
+        if self.acc == 0 and self.flag == 0:
+            self.pc = address
+        else:
+            self.pc += 1
+
+    def _handle_brp(self, address):
+        if self.flag == 0:
+            self.pc = address
+        else:
+            self.pc += 1
+
+    def _handle_io(self, address):
+        if address == 1:  # INP
+            if not self.input_buffer:
+                raise self.InputQueueEmptyError("Errore: Input buffer vuoto.")
+            self.acc = self.input_buffer.pop(0)
+        elif address == 2:  # OUT
+            self.output_buffer.append(self.acc)
+        else:
+            raise self.InvalidInstructionError(f"Errore: opcode I/O sconosciuto: 9{address}")
+        self.pc += 1
+
+    def _handle_hlt(self):
+        raise StopIteration
 
     def get_output(self):
         return self.output_buffer
 
     def _display_debug(self):
         #
-        # debug display per step-by-step
+        # display per step-by-step
         #
         print(f"\n[DEBUG] PC: {self.pc} | ACC: {self.acc} | FLAG: {self.flag}")
-        print("[DEBUG] Memory:")
+        print("[DEBUG] Memoria:")
         for i in range(0, 100, 10):
             row = ' '.join(f"{cell:03}" for cell in self.ram[i:i+10])
             print(f"{i:02}-{i+9:02}: {row}")
