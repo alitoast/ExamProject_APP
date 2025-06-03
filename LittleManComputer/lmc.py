@@ -13,7 +13,7 @@ class LMC:
         self.pc = 0                           # Program counter
         self.input_buffer = input_values or []
         self.output_buffer = []
-        self.flag = 0  # 1 if overflow or underflow, 0 otherwise
+        self.flag = 0  # 1 if over/underflow, 0 otherwise
 
     def load_program(self, memory_image):
         #
@@ -31,6 +31,21 @@ class LMC:
             while True:
                 self.execute_step(mode)
         except StopIteration:
-            print("Execution finished.")
+            print("Esecuzione terminata.")
 
+    def execute_step(self, mode="n"):
+        #
+        # esegue istruzione dal program counter
+        #
+        if not (0 <= self.pc < 100):
+            raise self.MemoryLimitError("Errore: Accesso memoria invalido.")
+
+        instruction = self.ram[self.pc]
+        opcode = instruction // 100
+        address = instruction % 100
+        self._decode_and_run(opcode, address)
+
+        if mode.lower() == "s":
+            self._display_debug()
+            input("Premere INVIO per continuare...")
     
