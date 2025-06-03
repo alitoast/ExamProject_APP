@@ -7,11 +7,14 @@ from copy import copy
 
 class LMC:
 
+    class LMCError(Exception):
+        pass
+
     class MemoryLimitError(LMCError):
-    pass
+        pass
 
     class InputQueueEmptyError(LMCError):
-    pass
+        pass
     
     class InvalidInstructionError(LMCError):
         pass
