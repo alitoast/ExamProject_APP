@@ -1,6 +1,6 @@
 # Exam Project – Advanced and Parallel Programming
 
-This repository contains my final project for the Advanced and Parallel Programming course. It consists of two main components:
+This repository contains the final project for the Advanced and Parallel Programming course. It consists of two main components:
 
 --- 
 

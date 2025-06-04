@@ -8,13 +8,25 @@ This project is a Raytracer implemented in C, it renders scenes described in a t
 - Saving the rendered image in PPM format.
 - Optional conversion to **PNG** using ImageMagick.
 
+---
+## **Structure**
+
+
+- `main.c`: Main file that manages the program’s flow.
+- `scene.h` and `scene.c`: Define and implement scene management and rendering.
+- `ppm.h` and `ppm.c`: Provide functionality for saving the image in PPM format.
+- `Makefile`: Enables compilation of the project.
+
 
 ---
 
 ## **How to Compile and Run**
+
+The scene file is a text file containing the description of the scene. To test the program, you can use the provided `scene.txt` file.
+
 ### 1. **Build the Project**
+
 ```bash
-cd Raytracing/src
 make
 ```
 - This compiles `main.c`, `scene.c`, and `ppm.c` into an executable named `raytracer`.
@@ -23,31 +35,34 @@ make
 ```bash
 make run
 ```
-Executes the raytracer with default arguments:  
+- Executes the raytracer with default arguments:  
   ```bash
   ./raytracer scene.txt output.ppm 1920 1080
   ```
 
-Otherwise execute the program with custom scene_file, output_file and dimensions using:
+- Otherwise execute the program with custom scene_file, output_file and dimensions (width and height) using:
 ```bash
 ./raytracer <scene_file> <output_file> <width> <height>
 ```
 
 ### 3. **Convert PPM to PNG (Optional)**
+
 ```bash
 make convert
 ```
 Converts automatically `output.ppm` to `output.png`. (Ensure ImageMagick is installed).
 
 ### 4. **Clean Up**
+
 ```bash
 make clean
 ```
-Removes compiled files (`raytracer`, `.o`, `output.ppm`, `output.png`).
+Removes compiled files (`raytracer`, `.o`).
 
 ---
 
 ## **Dependencies**
+
 - **GCC** (C compiler).
 - **OpenMP** (for parallel rendering).
 - **ImageMagick** (optional, for PPM-to-PNG conversion).
@@ -65,7 +80,10 @@ Removes compiled files (`raytracer`, `.o`, `output.ppm`, `output.png`).
     brew install imagemagick
     ```
 
+---
+
 ## **Error Codes**
+
 The program returns the following errors if they arise:
 
 | **Error Code** | **Error Name**        | **Description**                |
