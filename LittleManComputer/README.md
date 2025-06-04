@@ -44,26 +44,47 @@ python main.py
 
 ## Example with `test.lmc`
 
-### Run:
+**test.lmc**
+```
+        INP         // Read first number
+        STA TEMP    // Store it in TEMP
+        INP         // Read second number
+        ADD TEMP    // Add first number (from TEMP)
+        OUT         // Output result
+        HLT         // Halt program
+TEMP    DAT 0       // Reserve memory for TEMP
+```
+
+### Execution:
+
 
 ```bash
 python main.py
 ```
 
-**Input**:
+**When prompted:**:
 
 ```
 === Simulatore Little Man Computer ===
-Inserisci percorso del file .lmc: LittleManComputer/tests/test.lmc
-Inserisci valori di input, separati dalla virgola se valori multipli: 4,5
+Inserisci percorso del file .lmc: tests/test.lmc
+Inserisci valori di input, separati da uno spazio se valori multipli: 4 5
 Modalità di esecuzione: [c]ompleta o [s]tep-by-step? c
 ```
 
-**Output**:
+**Expected Output:**
 
 ```
 === Output Finale ===
 Output queue: [9]
 ```
-
 ---
+## Notes
+
+- Programs like `quine.lmc` and `looping.lmc` do not require input values.
+
+- When executing `squares.lmc` finish the input line with 0, which signals the end of the computation.
+  - Example: 8 9 0 (8 and 9 to square, 0 to end).
+
+- Input values must be integers between 0 and 999.
+
+- All assembly source files must have a .lmc extension
