@@ -15,9 +15,11 @@ It features:
 
 The project is organized into the following files:
 
-* `main.py`: The main file that manages user interaction and the overall program flow.
-* `assembler.py`: Contains the `Assembler` class that translates LMC assembly code into machine code.
-* `lmc.py`: Contains the `LMC` class that implements the CPU of the Little Man Computer.
+- `main.py`: Entry point of the simulator. It manages the overall program flow and coordinates the components.
+- `interface.py`: Handles all user interaction, including input of values, selection of execution mode, and file loading.
+- `assembler.py`: Contains the `Assembler` class, which converts `.lmc` assembly code into machine-readable memory.
+- `lmc.py`: Contains the `LMC` class, which simulates the CPU architecture and executes the machine instructions.
+
 
 ---
 
@@ -34,7 +36,7 @@ python main.py
 ### You will be prompted to:
 
 1. Enter the path to your `.lmc` program
-2. Enter input values (e.g. `4,5`)
+2. Enter input values (e.g. `4 5`)
 3. Choose:
 
    * `c` for complete execution
