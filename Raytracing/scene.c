@@ -40,7 +40,6 @@ int intersect_ray_sphere(Vector3 origin, Vector3 direction, Sphere sphere, float
     return (*t > 0);
 }
 
-
 /**
  * Funzione: render_scene
  * Genera l'immagine RGB calcolando il colore di ogni pixel attraverso il calcolo
@@ -77,7 +76,7 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
             float nearest_t = FLT_MAX;
             int hit_sphere = -1;
 
-            // controlla intersezioni con tutte le sfere
+            // verifica intersezioni con tutte le sfere
             for (int s = 0; s < scene->sphere_count; s++) {
                 float t;
                 if (intersect_ray_sphere(camera, direction, scene->spheres[s], &t)) {
@@ -88,7 +87,7 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
                 }
             }
 
-            // determina colore del pixel: sfera più vicina o sfondo
+            // assegnazione colore del pixel: sfera più vicina o sfondo
             int index = (j * width + i) * 3;
             if (hit_sphere >= 0) {
                 image[index] = scene->spheres[hit_sphere].r;
