@@ -1,0 +1,7 @@
+        INP         // Read first number
+        STA TEMP    // Store it in TEMP
+        INP         // Read second number
+        ADD TEMP    // Add first number (from TEMP)
+        OUT         // Output result
+        HLT         // Halt program
+TEMP    DAT 0       // Reserve memory for TEMP
