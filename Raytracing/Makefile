@@ -3,7 +3,7 @@ CFLAGS = -Wall -O2 -fopenmp
 LDFLAGS = -lm
 EXEC = raytracer
 
-SRC = main.c scene.c ppm.c
+SRC = main.c load_scene.c scene.c ppm.c
 OBJ = $(SRC:.c=.o)
 
 all: $(EXEC)
