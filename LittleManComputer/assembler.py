@@ -18,6 +18,7 @@ class Assembler:
         """
         Funzione principale: prende il codice sorgente in assembly e lo converte
         in una lista di 100 interi che rappresentano lo stato iniziale della memoria LMC.
+        Restituisce la memoria LMC pronta per l'esecuzione
         """
         try:
             source_lines = self._clean_source(source_code)
@@ -122,6 +123,7 @@ class Assembler:
         """
         Converte istruzioni che richiedono un operando (es. ADD, STA, LDA)
         in codice macchina (opcode * 100 + indirizzo).
+        Ritorna un int che rappresenta l'istruzione in codice machcchina.
         """
         if operand is None:
             raise ValueError(f"Errore: Operando mancante per istruzione: {operand}.")

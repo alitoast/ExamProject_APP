@@ -59,11 +59,15 @@ class LMC:
         if not (0 <= self.pc < 100):
             raise self.MemoryLimitError("Errore: Accesso memoria invalido.")
 
+        # recupera l'istruzione corrente dalla memoria
         instruction = self.ram[self.pc]
+        # decodifica l'istruzione: le prime 1-2 cifre sono l'opcode, le ultime due l'indirizzo
         opcode = instruction // 100
         address = instruction % 100
+        # esegue l'istruzione decodificata
         self._decode_and_run(opcode, address)
 
+        # se la modalità è step-by-step, mostra lo stato interno e attende input
         if mode.lower() == "s":
             self._display_debug()
             input("Premere INVIO per continuare.")
