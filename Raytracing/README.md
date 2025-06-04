@@ -9,12 +9,14 @@ This project is a Raytracer implemented in C, it renders scenes described in a t
 - Optional conversion to **PNG** using ImageMagick.
 
 ---
-## **Structure**
+## **Code Structure**
 
 
-- `main.c`: Main file that manages the program’s flow.
-- `scene.h` and `scene.c`: Define and implement scene management and rendering.
-- `ppm.h` and `ppm.c`: Provide functionality for saving the image in PPM format.
+- `main.c`: Parses command-line arguments, loads the scene, renders, and saves the output.
+- `scene.h`: Defines data structures and function prototypes. 
+- `scene.c`: Loads scene data and renders the image.
+- `ppm.h`: Defines the interface for the save_ppm function.  
+- `ppm.c`: Saves the rendered image as a PPM file using memory-mapped I/O.
 - `Makefile`: Enables compilation of the project.
 
 
