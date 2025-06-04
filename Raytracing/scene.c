@@ -3,7 +3,6 @@ Alice Macuz
 SM3201385
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
@@ -12,76 +11,14 @@ SM3201385
 #include "scene.h"
 
 /**
- * Funzione: load_scene
- * Carica una scena da file leggendo i parametri del viewport, il colore di sfondo
- * e l'elenco delle sfere. Alloca la memoria necessaria per le sfere.
- *
- *
- * @param filename Nome del file da cui leggere la scena.
- * @param scene Puntatore alla struttura Scene dove caricare i dati.
- *
- * @return true se il caricamento è avvenuto con successo, false in caso di errore.
- */
-bool load_scene(const char *filename, Scene *scene) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        fprintf(stderr,"Errore: impossibile aprire %s\n", filename);
-        return false;
-    }
-    // legge i parametri della scena
-    fscanf(file, "VP %f %f %f\n", &scene->viewport_width, &scene->viewport_height, &scene->viewport_distance);
-    fscanf(file, "BG %hhu %hhu %hhu\n", &scene->bg_r, &scene->bg_g, &scene->bg_b);
-    fscanf(file, "OBJ_N %d\n", &scene->sphere_count);
-
-    printf("Scena caricata correttamente!\n");
-    printf("Viewport: %.3f x %.3f, distanza %.3f\n", scene->viewport_width, scene->viewport_height, scene->viewport_distance);
-    printf("Colore di sfondo: (%d, %d, %d)\n", (int)scene->bg_r, (int)scene->bg_g, (int)scene->bg_b);
-    printf("Numero di sfere: %d\n", scene->sphere_count);
-
-    // alloca memoria per le sfere
-    scene->spheres = malloc(scene->sphere_count * sizeof(Sphere));
-    if (!scene->spheres) {
-        fprintf(stderr, "Errore: L'allocamento della memoria non è andato a buon fine.\n");
-        fclose(file);
-        return false;
-    }
-    
-    // legge le sfere con contatore per vedere se il numero di sfere corrisponde OBJ_N
-    int sphere_count_read = 0; // 
-    for (int i = 0; i < scene->sphere_count; i++) {
-        Sphere *s = &scene->spheres[i];
-        fscanf(file, "S %f %f %f %f %hhu %hhu %hhu\n",
-               &s->center.x, &s->center.y, &s->center.z,
-               &s->radius, &s->r, &s->g, &s->b);
-
-        printf("Sfera %d - Centro: (%.2f, %.2f, %.2f), Raggio: %.2f, Colore: (%d, %d, %d)\n",
-               i + 1, s->center.x, s->center.y, s->center.z, s->radius, s->r, s->g, s->b);
-        sphere_count_read++;
-    }
-
-    // se c'è un mismatch presenta errore
-    if (sphere_count_read != scene->sphere_count) {
-        fprintf(stderr, "Errore: Le sfere non corrispondono (expected %d, read %d)\n",
-                scene->sphere_count, sphere_count_read);
-        free(scene->spheres);
-        fclose(file);
-        return false;
-}
-
-    fclose(file);
-    return true;
-}
-
-
-/**
  * Funzione: intersect_ray_sphere
- * Calcola l'intersezione tra un raggio e una sfera.
- * 
+ * Calcola l'intersezione tra un raggio (definito dall'origine e dalla direzione) e una sfera.
+ * La funzione risolve l'equazione quadratica del raggio e della sfera.
  *
  * @param origin Origine del raggio (camera).
- * @param direction Direzione del raggio normalizzata.
- * @param sphere La sfera da testare.
- * @param t Output: distanza dell'intersezione più vicina se esiste.
+ * @param direction Direzione del raggio, normalizzata.
+ * @param sphere Sfera da testare per l'intersezione.
+ * @param t Puntatore a un float che riceverà la distanza dell'intersezione più vicina (se presente).
  * @return 1 se c'è intersezione, 0 altrimenti.
  */
 int intersect_ray_sphere(Vector3 origin, Vector3 direction, Sphere sphere, float *t) {
@@ -106,15 +43,14 @@ int intersect_ray_sphere(Vector3 origin, Vector3 direction, Sphere sphere, float
 
 /**
  * Funzione: render_scene
- * Genera l'immagine calcolando il colore di ciascun pixel in base alle intersezioni
- * tra i raggi lanciati dalla camera e gli oggetti della scena.
+ * Genera l'immagine RGB calcolando il colore di ogni pixel attraverso il calcolo
+ * delle intersezioni tra raggi lanciati dalla camera e gli oggetti della scena.
  * Utilizza OpenMP per parallelizzare il rendering dei pixel.
  *
- *
- * @param scene puntatore alla struttura scena da renderizzare
- * @param image array in cui scrivere i dati RGB dell'immagine
- * @param width larghezza dell'immagine in pixel
- * @param height altezza dell'immagine in pixel
+ * @param scene Puntatore alla struttura contenente i dati della scena da renderizzare.
+ * @param image Array in cui scrivere i dati RGB dell'immagine (3 byte per pixel).
+ * @param width Larghezza dell'immagine in pixel.
+ * @param height Altezza dell'immagine in pixel.
  */
 void render_scene(Scene *scene, unsigned char *image, int width, int height) {
     Vector3 camera = {0, 0, 0}; // la camera è sempre all'origine
@@ -131,7 +67,8 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
             float u = (i - width / 2.0f) * (viewport_w / width);
             float v = (j - height / 2.0f) * (viewport_h / height);
             Vector3 direction = {u, v, focal_length};
-            // normalizza il vettore
+
+            // normalizza la direzione del raggio
             float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
             direction.x /= length;
             direction.y /= length;
@@ -140,7 +77,7 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
             float nearest_t = FLT_MAX;
             int hit_sphere = -1;
 
-            // controlla intersezioni
+            // controlla intersezioni con tutte le sfere
             for (int s = 0; s < scene->sphere_count; s++) {
                 float t;
                 if (intersect_ray_sphere(camera, direction, scene->spheres[s], &t)) {
@@ -151,6 +88,7 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
                 }
             }
 
+            // determina colore del pixel: sfera più vicina o sfondo
             int index = (j * width + i) * 3;
             if (hit_sphere >= 0) {
                 image[index] = scene->spheres[hit_sphere].r;
@@ -167,7 +105,7 @@ void render_scene(Scene *scene, unsigned char *image, int width, int height) {
 
 /*
  * Funzione: free_scene
- * Libera la memoria allocata per le sfere nella scena.
+ * Libera la memoria allocata dinamicamente per le sfere nella scena.
  */
 void free_scene(Scene *scene) {
     free(scene->spheres);
