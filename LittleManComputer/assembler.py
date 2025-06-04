@@ -74,6 +74,8 @@ class Assembler:
             if instr == "DAT":
                 self.memory[current_address] = self._resolve_dat(operand)
             elif instr in ("INP", "OUT", "HLT"):
+                if operand is not None:
+                    raise ValueError(f"Errore: L'istruzione {instr} non accetta operandi.")
                 self.memory[current_address] = self.opcodes[instr]
             else:
                 self.memory[current_address] = self._resolve_instruction_with_operand(instr, operand)
@@ -116,4 +118,9 @@ class Assembler:
             address = self.labels[operand.upper()]
         else:
             raise ValueError(f"Errore: Label non definita: {operand}.")
+        
+        # validazione range operando
+        if address < 0 or address >= 100:
+            raise ValueError(f"Errore: Operando fuori range per {instr}: {address}.")
+
         return self.opcodes[instr] * 100 + address
