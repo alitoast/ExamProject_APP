@@ -55,7 +55,6 @@ class LMC:
         instruction = self.ram[self.pc]
         opcode = instruction // 100
         address = instruction % 100
-        print(f"[DEBUG]Executing instruction at PC={self.pc}: {instruction} (opcode={opcode}, address={address})")
         self._decode_and_run(opcode, address)
 
         if mode.lower() == "s":
