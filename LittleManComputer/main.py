@@ -5,6 +5,7 @@
 
 from assembler import Assembler
 import lmc
+import os
 
 def get_input_values():
     """
@@ -80,8 +81,11 @@ def main():
     except Exception as e:
         print(f"Errore: Assemblaggio del codice fallito: {e}")
         return
-    
-    if "quine.lmc" in file_path:
+
+    filename = os.path.basename(file_path).lower()
+    no_input_required = ["quine.lmc", "looping.lmc"]
+
+    if filename in no_input_required:
         input_values = []
     else:
         input_values = get_input_values()
