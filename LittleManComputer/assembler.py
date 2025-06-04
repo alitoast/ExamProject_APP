@@ -5,6 +5,7 @@
 
 class Assembler:
     def __init__(self):
+        # dizionario che associa le istruzioni LMC al loro opcode
         self.opcodes ={
             "ADD": 1, "SUB": 2, "STA": 3, "LDA": 5,
             "BRA": 6, "BRZ": 7, "BRP": 8,
@@ -14,6 +15,10 @@ class Assembler:
         self.memory = [0] * 100
     
     def assemble(self, source_code:str):
+        """
+        Funzione principale: prende il codice sorgente in assembly e lo converte
+        in una lista di 100 interi che rappresentano lo stato iniziale della memoria LMC.
+        """
         try:
             source_lines = self._clean_source(source_code)
             self._resolve_labels(source_lines)
@@ -24,7 +29,8 @@ class Assembler:
     
     def _clean_source(self, source_code: str):
         """
-        pulisce source_code da commenti e linee vuote
+        Elimina i commenti (dopo //) e le righe vuote dal sorgente.
+        Ritorna una lista di righe pulite.
         """
         source_lines = source_code.splitlines()
         cleaned = []
@@ -36,7 +42,8 @@ class Assembler:
     
     def _resolve_labels(self, source_lines):
         """
-        mappa labels to indirizzi memoria
+        Prima passata sul codice: associa ogni label al suo indirizzo in memoria.
+        Controlla anche che non ci siano label duplicate o più di 100 istruzioni.
         """
         current_address = 0
 
@@ -52,17 +59,18 @@ class Assembler:
 
                 self.labels[label] = current_address
 
-            # conta line come istruzione e avanza l'indirizzo di memoria
+            # conta ogni riga come istruzione (con o senza label)
             if len(parts) > 1 or parts[0].upper() in self.opcodes:
                 current_address += 1
 
-            # controlla bounds
+            # controlla che non si superi la memoria LMC
             if current_address > 100:
                 raise MemoryError("Errore: Il programma eccede la memoria dell'LMC (100 celle).")
 
     def _to_machine_code(self, source_lines):
         """
-        converte istruzioni in codice macchina
+        Seconda passata: converte ogni istruzione in formato numerico (codice macchina)
+        e la salva nella memoria simulata.
         """
         current_address = 0
         for line in source_lines:
@@ -84,18 +92,22 @@ class Assembler:
 
     def _parse_instruction(self, line):
         """
-        estrae istruzione e operando, rimuove label se presente
+        Estrae istruzione e operando da una riga.
+        Rimuove l'etichetta iniziale se presente.
+        Ritorna una tupla (istruzione, operando).
         """
         parts = line.split(maxsplit=2)
         if len(parts) > 1 and parts[0].upper() not in self.opcodes:
             parts.pop(0)  # rimuove label
+
         instr = parts[0].upper()
         operand = parts[1] if len(parts) > 1 else None
         return instr, operand
         
     def _resolve_dat(self, operand):
         """
-        risolve il valore di una direttiva DAT
+        Gestisce la direttiva DAT, che riserva spazio in memoria.
+        Può contenere un valore numerico iniziale o un riferimento a una label.
         """
         if operand is None:
             return 0
@@ -108,10 +120,12 @@ class Assembler:
 
     def _resolve_instruction_with_operand(self, instr, operand):
         """
-        risolve istruzioni con operando (es. ADD, STA)
+        Converte istruzioni che richiedono un operando (es. ADD, STA, LDA)
+        in codice macchina (opcode * 100 + indirizzo).
         """
         if operand is None:
             raise ValueError(f"Errore: Operando mancante per istruzione: {operand}.")
+        # risolve indirizzo numerico diretto o label
         if operand.isdigit():
             address = int(operand)
         elif operand.upper() in self.labels:
@@ -119,7 +133,7 @@ class Assembler:
         else:
             raise ValueError(f"Errore: Label non definita: {operand}.")
         
-        # validazione range operando
+        # controllo che l'indirizzo sia validome
         if address < 0 or address >= 100:
             raise ValueError(f"Errore: Operando fuori range per {instr}: {address}.")
 

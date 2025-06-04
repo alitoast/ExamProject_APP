@@ -6,6 +6,10 @@
 from copy import copy
 
 class LMC:
+    """
+    Simulatore del Little Man Computer (LMC).
+    Gestisce la memoria, le istruzioni, il flusso di esecuzione e le operazioni I/O.
+    """
 
     class LMCError(Exception):
         pass
@@ -20,16 +24,16 @@ class LMC:
         pass
 
     def __init__(self, input_values=None):
-        self.ram = [0] * 100                  
-        self.acc = 0                          # Accumulator
+        self.ram = [0] * 100                  # Memoria 100 celle
+        self.acc = 0                          # Accumulatore
         self.pc = 0                           # Program counter
-        self.input_buffer = input_values or []
-        self.output_buffer = []
-        self.flag = 0  # 1 if over/underflow, 0 otherwise
+        self.input_buffer = input_values or []# Coda input
+        self.output_buffer = []               # Coda output
+        self.flag = 0  # 1 if over/underflow, 0 altrimenti
 
     def load_program(self, memory_image):
         """
-        carica codice macchina in memoria
+        Carica un programma in memoria.
         """
         if len(memory_image) > 100:
             raise self.MemoryLimitError("Errore: Programma troppo grande per memoria.")
@@ -37,7 +41,9 @@ class LMC:
 
     def execute(self, mode="n"):
         """
-        esegue tutto il programma oppure step-by-stepp
+        Esegue il programma caricato:
+        - 'c' o qualsiasi altro valore: esecuzione continua
+        - 's': esecuzione passo-passo con debug
         """
         try:
             while True:
@@ -47,7 +53,8 @@ class LMC:
 
     def execute_step(self, mode="n"):
         """
-         esegue istruzione dal program counter
+        Esegue una singola istruzione dal program counter.
+        Se in modalità step-by-step, mostra lo stato della memoria dopo l'esecuzione.
         """
         if not (0 <= self.pc < 100):
             raise self.MemoryLimitError("Errore: Accesso memoria invalido.")
@@ -63,7 +70,7 @@ class LMC:
     
     def _decode_and_run(self, opcode, address):
         """
-        decodifica ed esegue un'istruzione
+        Decodifica l'opcode e delega l'esecuzione alla funzione corrispondente.
         """
         if opcode == 1:  # ADD
             self._handle_add(address)
@@ -86,12 +93,15 @@ class LMC:
         else:
             raise self.InvalidInstructionError(f"Errore: Istruzione non ammessa: {opcode}{address}")
 
+    # Handler istruzioni
+
     def _handle_add(self, address):
         self._check_address(address)
         result = self.acc + self.ram[address]
-        self.flag = 1 if result > 999 else 0
-        self.acc = result % 1000
-        self.pc += 1
+        self.flag = 1 if result > 999 else 0  # imposta il flag in caso di overflow
+        self.acc = result % 1000              # simula registri a 3 cifre (max 999)
+        self.pc += 1                          # passa all'istruzione successiva
+
 
     def _handle_sub(self, address):
         self._check_address(address)
@@ -129,16 +139,28 @@ class LMC:
             self.pc += 1
 
     def _handle_io(self, address):
+        """
+        Gestisce le operazioni di input/output:
+        - INP (901): legge un valore dal buffer di input nell'accumulatore
+        - OUT (902): scrive il contenuto dell'accumulatore nel buffer di output
+        """
         self._check_address(address)
+
         if address == 1:  # INPUT
             if not self.input_buffer:
                 raise self.InputQueueEmptyError("Errore: Input buffer vuoto impossibile eseguire istruzione.")
-            value = self.input_buffer.pop(0)
+
+            value = self.input_buffer.pop(0) # preleva e rimuove il primo valore in input
+
+            # validazione del valore ricevuto
             if value < 0 or value > 999:
                 raise ValueError(f"Valore di input non valido: {value}")
+
             self.acc = value
+
         elif address == 2:  # OUTPUT
-            self.output_buffer.append(self.acc)
+            self.output_buffer.append(self.acc) # scrive l'accumulatore nell'output
+            
         else:
            raise self.InvalidInstructionError(f"Errore: opcode I/O sconosciuto: 9{address}")
         self.pc += 1
@@ -151,7 +173,7 @@ class LMC:
 
     def _display_debug(self):
         """
-        display per step-by-step
+        Mostra lo stato interno della macchina durante l'esecuzione passo-passo.
         """
         print(f"\nPC: {self.pc} | ACC: {self.acc} | FLAG: {self.flag}")
         print("Memoria:")
