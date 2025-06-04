@@ -28,17 +28,17 @@ class LMC:
         self.flag = 0  # 1 if over/underflow, 0 otherwise
 
     def load_program(self, memory_image):
-        #
-        # carica codice macchina in memoria
-        #
+        """
+        carica codice macchina in memoria
+        """
         if len(memory_image) > 100:
             raise self.MemoryLimitError("Errore: Programma troppo grande per memoria.")
         self.ram = copy(memory_image)
 
     def execute(self, mode="n"):
-        #
-        # esegue tutto il programma oppure step-by-stepp
-        #
+        """
+        esegue tutto il programma oppure step-by-stepp
+        """
         try:
             while True:
                 self.execute_step(mode)
@@ -46,25 +46,26 @@ class LMC:
             print("Esecuzione terminata.")
 
     def execute_step(self, mode="n"):
-        #
-        # esegue istruzione dal program counter
-        #
+        """
+         esegue istruzione dal program counter
+        """
         if not (0 <= self.pc < 100):
             raise self.MemoryLimitError("Errore: Accesso memoria invalido.")
 
         instruction = self.ram[self.pc]
         opcode = instruction // 100
         address = instruction % 100
+        print(f"[DEBUG]Executing instruction at PC={self.pc}: {instruction} (opcode={opcode}, address={address})")
         self._decode_and_run(opcode, address)
 
         if mode.lower() == "s":
             self._display_debug()
-            input("Premere INVIO per continuare...")
+            input("Premere INVIO per continuare.")
     
     def _decode_and_run(self, opcode, address):
-        #
-        # decodifica ed esegue un'istruzione
-        #
+        """
+        decodifica ed esegue un'istruzione
+        """
         if opcode == 1:  # ADD
             self._handle_add(address)
         elif opcode == 2:  # SUB
@@ -87,49 +88,60 @@ class LMC:
             raise self.InvalidInstructionError(f"Errore: Istruzione non ammessa: {opcode}{address}")
 
     def _handle_add(self, address):
+        self._check_address(address)
         result = self.acc + self.ram[address]
-        self.acc = result % 1000
         self.flag = 1 if result > 999 else 0
+        self.acc = result % 1000
         self.pc += 1
 
     def _handle_sub(self, address):
+        self._check_address(address)
         result = self.acc - self.ram[address]
-        self.acc = result % 1000
         self.flag = 1 if result < 0 else 0
+        self.acc = result % 1000
         self.pc += 1
 
     def _handle_sta(self, address):
+        self._check_address(address)
         self.ram[address] = self.acc
         self.pc += 1
 
     def _handle_lda(self, address):
+        self._check_address(address)
         self.acc = self.ram[address]
         self.pc += 1
 
     def _handle_bra(self, address):
+        self._check_address(address)
         self.pc = address
 
     def _handle_brz(self, address):
+        self._check_address(address)
         if self.acc == 0 and self.flag == 0:
             self.pc = address
         else:
             self.pc += 1
 
     def _handle_brp(self, address):
+        self._check_address(address)
         if self.flag == 0:
             self.pc = address
         else:
             self.pc += 1
 
     def _handle_io(self, address):
-        if address == 1:  # INP
+        self._check_address(address)
+        if address == 1:  # INPUT
             if not self.input_buffer:
-                raise self.InputQueueEmptyError("Errore: Input buffer vuoto.")
-            self.acc = self.input_buffer.pop(0)
-        elif address == 2:  # OUT
+                raise self.InputQueueEmptyError("Errore: Input buffer vuoto impossibile eseguire istruzione.")
+            value = self.input_buffer.pop(0)
+            if value < 0 or value > 999:
+                raise ValueError(f"Valore di input non valido: {value}")
+            self.acc = value
+        elif address == 2:  # OUTPUT
             self.output_buffer.append(self.acc)
         else:
-            raise self.InvalidInstructionError(f"Errore: opcode I/O sconosciuto: 9{address}")
+           raise self.InvalidInstructionError(f"Errore: opcode I/O sconosciuto: 9{address}")
         self.pc += 1
 
     def _handle_hlt(self):
@@ -139,13 +151,17 @@ class LMC:
         return self.output_buffer
 
     def _display_debug(self):
-        #
-        # display per step-by-step
-        #
-        print(f"\n[DEBUG] PC: {self.pc} | ACC: {self.acc} | FLAG: {self.flag}")
-        print("[DEBUG] Memoria:")
+        """
+        display per step-by-step
+        """
+        print(f"\nPC: {self.pc} | ACC: {self.acc} | FLAG: {self.flag}")
+        print("Memoria:")
         for i in range(0, 100, 10):
             row = ' '.join(f"{cell:03}" for cell in self.ram[i:i+10])
             print(f"{i:02}-{i+9:02}: {row}")
-        print(f"[DEBUG] Input buffer: {self.input_buffer}")
-        print(f"[DEBUG] Output buffer: {self.output_buffer}")
+        print(f"Input buffer: {self.input_buffer}")
+        print(f"Output buffer: {self.output_buffer}")
+
+    def _check_address(self, address):
+        if not 0 <= address < 100:
+            raise self.MemoryLimitError(f"Errore: Indirizzo memoria non valido: {address}")
