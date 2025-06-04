@@ -43,9 +43,9 @@ make run
   ```
 
 - Otherwise execute the program with custom scene_file, output_file and dimensions (width and height) using:
-```bash
-./raytracer <scene_file> <output_file> <width> <height>
-```
+  ```bash
+  ./raytracer <scene_file> <output_file> <width> <height>
+  ```
 
 ### 3. **Convert PPM to PNG (Optional)**
 
