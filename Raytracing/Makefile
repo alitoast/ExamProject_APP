@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -O2 -fopenmp
+CFLAGS = -Wall -Wextra -O2 -fopenmp
 LDFLAGS = -lm
 EXEC = raytracer
 
