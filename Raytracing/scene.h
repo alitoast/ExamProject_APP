@@ -28,7 +28,6 @@ typedef struct {
     Sphere *spheres;
 } Scene;
 
-bool load_scene(const char *filename, Scene *scene);
 int intersect_ray_sphere(Vector3 origin, Vector3 direction, Sphere sphere, float *t);
 void render_scene(Scene *scene, unsigned char *image, int width, int height);
 void free_scene(Scene *scene);

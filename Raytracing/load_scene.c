@@ -6,7 +6,6 @@ SM3201385
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdbool.h>
 #include <float.h>
 #include "load_scene.h"
 #include "scene.h"
