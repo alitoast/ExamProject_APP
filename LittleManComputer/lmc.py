@@ -3,14 +3,14 @@
 # SM3201385
 #
 
+"""
+lmc.py — Simulatore della macchina Little Man Computer (LMC).
+Emula l'esecuzione di istruzioni LMC con memoria, accumulatore e gestione I/O.
+"""
+
 from copy import copy
 
 class LMC:
-    """
-    Simulatore del Little Man Computer (LMC).
-    Gestisce la memoria, le istruzioni, il flusso di esecuzione e le operazioni I/O.
-    """
-
     class LMCError(Exception):
         pass
 
@@ -37,6 +37,7 @@ class LMC:
         """
         if len(memory_image) > 100:
             raise self.MemoryLimitError("Errore: Programma troppo grande per memoria.")
+
         self.ram = copy(memory_image)
 
     def execute(self, mode="n"):
@@ -61,9 +62,11 @@ class LMC:
 
         # recupera l'istruzione corrente dalla memoria
         instruction = self.ram[self.pc]
+
         # decodifica l'istruzione: le prime 1-2 cifre sono l'opcode, le ultime due l'indirizzo
         opcode = instruction // 100
         address = instruction % 100
+
         # esegue l'istruzione decodificata
         self._decode_and_run(opcode, address)
 
@@ -102,7 +105,7 @@ class LMC:
     def _handle_add(self, address):
         self._check_address(address)
         result = self.acc + self.ram[address]
-        self.flag = 1 if result > 999 else 0  # imposta il flag in caso di overflow
+        self.flag = 1 if result > 999 else 0  # flag = 1 se overflow
         self.acc = result % 1000              # simula registri a 3 cifre (max 999)
         self.pc += 1                          # passa all'istruzione successiva
 
@@ -110,7 +113,7 @@ class LMC:
     def _handle_sub(self, address):
         self._check_address(address)
         result = self.acc - self.ram[address]
-        self.flag = 1 if result < 0 else 0
+        self.flag = 1 if result < 0 else 0    # flag = 1 se underflow
         self.acc = result % 1000
         self.pc += 1
 
@@ -130,6 +133,7 @@ class LMC:
 
     def _handle_brz(self, address):
         self._check_address(address)
+    
         if self.acc == 0 and self.flag == 0:
             self.pc = address
         else:
@@ -137,6 +141,7 @@ class LMC:
 
     def _handle_brp(self, address):
         self._check_address(address)
+        
         if self.flag == 0:
             self.pc = address
         else:
@@ -181,9 +186,11 @@ class LMC:
         """
         print(f"\nPC: {self.pc} | ACC: {self.acc} | FLAG: {self.flag}")
         print("Memoria:")
+
         for i in range(0, 100, 10):
             row = ' '.join(f"{cell:03}" for cell in self.ram[i:i+10])
             print(f"{i:02}-{i+9:02}: {row}")
+
         print(f"Input buffer: {self.input_buffer}")
         print(f"Output buffer: {self.output_buffer}")
 
