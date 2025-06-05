@@ -13,11 +13,13 @@ This project is a Raytracer implemented in C, it renders scenes described in a t
 
 
 - `main.c`: Parses command-line arguments, loads the scene, renders, and saves the output.
-- `scene.h`: Defines data structures and function prototypes. 
-- `scene.c`: Loads scene data and renders the image.
-- `ppm.h`: Defines the interface for the save_ppm function.  
-- `ppm.c`: Saves the rendered image as a PPM file using memory-mapped I/O.
-- `Makefile`: Enables compilation of the project.
+- `load_scene.c`: Handles reading and parsing the scene file, including viewport, background color, and object data.
+- `load_scene.h`: Declares the load_scene function used to load scene data from a .txt file.
+- `scene.c`: Contains ray-sphere intersection function and rendering logic.
+- `scene.h`: Defines core data structures and function prototypes used throughout the project.
+- `ppm.c`: Implements saving the rendered image as a PPM file using memory-mapped I/O.
+- `ppm.h`: Declares the interface for saving the rendered image in PPM format.  
+- `Makefile`: Defines compilation rules for building and running the project.
 
 
 ---
@@ -31,7 +33,7 @@ The scene file is a text file containing the description of the scene. To test t
 ```bash
 make
 ```
-- This compiles `main.c`, `scene.c`, and `ppm.c` into an executable named `raytracer`.
+- This compiles `main.c`, `load_scene.c`, `scene.c`, and `ppm.c` into an executable named `raytracer`.
 
 ### 2. **Run the Program**
 ```bash
