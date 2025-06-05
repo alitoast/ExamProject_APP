@@ -3,6 +3,12 @@
 # SM3201385
 #
 
+"""
+assembler.py — Assembler per il simulatore Little Man Computer (LMC).
+Traduce codice assembly .lmc in codice macchina.
+"""
+
+
 class Assembler:
     def __init__(self):
         # dizionario che associa le istruzioni LMC al loro opcode
@@ -10,14 +16,16 @@ class Assembler:
             "ADD": 1, "SUB": 2, "STA": 3, "LDA": 5,
             "BRA": 6, "BRZ": 7, "BRP": 8,
             "INP": 901, "OUT": 902, "HLT": 0,
-            "DAT": None}
+            "DAT": None
+        }
         self.labels = {}
         self.memory = [0] * 100
     
-    def assemble(self, source_code:str):
+    def assemble(self, source_code: str):
         """
-        Funzione principale: prende il codice sorgente in assembly e lo converte
-        in una lista di 100 interi che rappresentano lo stato iniziale della memoria LMC.
+        Funzione principale dell'Assembler:
+        - Prima passata: risolve le etichette.
+        - Seconda passata: converte le istruzioni in codice macchina.
         Restituisce la memoria LMC pronta per l'esecuzione
         """
         try:
@@ -25,6 +33,7 @@ class Assembler:
             self._resolve_labels(source_lines)
             self._to_machine_code(source_lines)
             return self.memory
+
         except Exception as e:
             raise RuntimeError(f"Errore: assemblaggio fallito: {str(e)}.")
     
@@ -43,17 +52,16 @@ class Assembler:
     
     def _resolve_labels(self, source_lines):
         """
-        Prima passata sul codice: associa ogni label al suo indirizzo in memoria.
-        Controlla anche che non ci siano label duplicate o più di 100 istruzioni.
+        Prima passata: associa ogni label al suo indirizzo in memoria.
         """
         current_address = 0
 
         for line in source_lines:
-            parts = line.split(maxsplit=1)
+            elements = line.split(maxsplit=1)
 
             # se la prima parola non è un'istruzione, allora è una label
-            if len(parts) > 1 and parts[0].upper() not in self.opcodes:
-                label = parts[0].upper()
+            if len(elements) > 1 and elements[0].upper() not in self.opcodes:
+                label = elements[0].upper()
 
                 if label in self.labels:
                     raise ValueError(f"Errore: Label duplicata: {label}.")
@@ -61,7 +69,7 @@ class Assembler:
                 self.labels[label] = current_address
 
             # conta ogni riga come istruzione (con o senza label)
-            if len(parts) > 1 or parts[0].upper() in self.opcodes:
+            if len(elements) > 1 or elements[0].upper() in self.opcodes:
                 current_address += 1
 
             # controlla che non si superi la memoria LMC
@@ -75,18 +83,22 @@ class Assembler:
         """
         current_address = 0
         for line in source_lines:
+            # estrae l'istruzione e l'eventuale operando dalla riga
             instr, operand = self._parse_instruction(line)
-
+            
+            # verifica che l'istruzione sia valida
             if instr not in self.opcodes:
                 raise ValueError(f"Errore: Istruzione non valida: {instr}.")
 
             if instr == "DAT":
                 self.memory[current_address] = self._resolve_dat(operand)
             elif instr in ("INP", "OUT", "HLT"):
+                # queste istruzioni non accettano operandi
                 if operand is not None:
                     raise ValueError(f"Errore: L'istruzione {instr} non accetta operandi.")
                 self.memory[current_address] = self.opcodes[instr]
             else:
+                # per le istruzioni con operando (ADD, STA, etc.)
                 self.memory[current_address] = self._resolve_instruction_with_operand(instr, operand)
 
             current_address += 1
@@ -97,12 +109,12 @@ class Assembler:
         Rimuove l'etichetta iniziale se presente.
         Ritorna una tupla (istruzione, operando).
         """
-        parts = line.split(maxsplit=2)
-        if len(parts) > 1 and parts[0].upper() not in self.opcodes:
-            parts.pop(0)  # rimuove label
+        elements = line.split(maxsplit=2)
+        if len(elements) > 1 and elements[0].upper() not in self.opcodes:
+            elements.pop(0)  # rimuove label
 
-        instr = parts[0].upper()
-        operand = parts[1] if len(parts) > 1 else None
+        instr = elements[0].upper()
+        operand = elements[1] if len(elements) > 1 else None
         return instr, operand
         
     def _resolve_dat(self, operand):
@@ -127,6 +139,7 @@ class Assembler:
         """
         if operand is None:
             raise ValueError(f"Errore: Operando mancante per istruzione: {operand}.")
+
         # risolve indirizzo numerico diretto o label
         if operand.isdigit():
             address = int(operand)
@@ -135,7 +148,7 @@ class Assembler:
         else:
             raise ValueError(f"Errore: Label non definita: {operand}.")
         
-        # controllo che l'indirizzo sia validome
+        # controllo che l'indirizzo sia valido
         if address < 0 or address >= 100:
             raise ValueError(f"Errore: Operando fuori range per {instr}: {address}.")
 
