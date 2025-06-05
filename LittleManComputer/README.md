@@ -68,7 +68,7 @@ python main.py
 
 ```
 === Simulatore Little Man Computer ===
-Inserisci percorso del file .lmc: tests/test.lmc
+Inserisci percorso del file .lmc: LittleManComputer/tests/test.lmc
 Inserisci valori di input, separati da uno spazio se valori multipli: 4 5
 Modalità di esecuzione: [c]ompleta o [s]tep-by-step? c
 ```
