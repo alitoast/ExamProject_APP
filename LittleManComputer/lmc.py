@@ -8,6 +8,7 @@ lmc.py — Simulatore della macchina Little Man Computer (LMC).
 Emula l'esecuzione di istruzioni LMC con memoria, accumulatore e gestione I/O.
 """
 
+
 from copy import copy
 
 class LMC:
@@ -141,7 +142,7 @@ class LMC:
 
     def _handle_brp(self, address):
         self._check_address(address)
-        
+
         if self.flag == 0:
             self.pc = address
         else:
