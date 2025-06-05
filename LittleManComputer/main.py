@@ -3,6 +3,15 @@
 # SM3201385
 #
 
+"""
+Flusso principale del programma.
+Carica e assembla un file .lmc.
+Chiede gli input (se necessari).
+Esegue il programma in modalità scelta.
+Mostra il contenuto dell'output buffer.
+"""
+
+
 from assembler import Assembler
 import lmc
 from interface import (
@@ -14,13 +23,6 @@ from interface import (
 import os
 
 def main():
-    """
-    Flusso principale del programma:
-    - Carica e assembla un file .lmc
-    - Chiede gli input (se necessari)
-    - Esegue il programma in modalità scelta
-    - Mostra il contenuto dell'output buffer
-    """
     print("=== Simulatore Little Man Computer ===")
 
     # carica file assembly .lmc
@@ -34,7 +36,7 @@ def main():
         print(f"Errore: Assemblaggio del codice fallito: {e}")
         return
 
-    # verifica se il file non richiede input (dalla lista di esempio)
+    # verifica se il file è uno dei due che non richiede input
     filename = os.path.basename(file_path).lower()
     no_input_required = ["quine.lmc", "looping.lmc"]
 
